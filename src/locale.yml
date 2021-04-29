@@ -1,0 +1,8 @@
+wrong-cmd: 'Wrong command.'
+inv-name: '&dCringe'
+no-block: '&cThere is no chest!'
+locked: '&dLocked on level: &e%level%'
+wrong-level: '&cWrong level!'
+wrong-type: '&cWrong type!'
+lockpick-broken: '&cLockpick broken!'
+reloaded: ''

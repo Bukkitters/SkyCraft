@@ -1,0 +1,10 @@
+name: SkyCraft
+version: 1.0
+description: Lockpicking is always an option!
+authors: [NukerFall, Steep]
+main: org.SkyCraftTeam.SkyCraft.Main
+api-version: 1.16
+commands:
+  skycraft:
+    aliases: [sc, scraft]
+    description: Main plugin command
