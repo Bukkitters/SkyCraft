@@ -1,6 +1,8 @@
 package org.SkyCraftTeam.SkyCraft.Core;
 
 import org.SkyCraftTeam.SkyCraft.Main;
+import org.SkyCraftTeam.SkyCraft.Utils.IItems;
+import org.SkyCraftTeam.SkyCraft.Utils.InventoryWorker;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Chest;
@@ -14,7 +16,9 @@ import org.bukkit.persistence.PersistentDataType;
 public class ChestInteract implements Listener {
 
 	private NamespacedKey key;
-
+	private IItems items = new IItems();
+	private InventoryWorker worker = new InventoryWorker();
+	
 	public ChestInteract(Main main) {
 		main.getServer().getPluginManager().registerEvents(this, main);
 		key = new NamespacedKey(main, "skycraft-lock");
@@ -32,7 +36,9 @@ public class ChestInteract implements Listener {
 						e.setCancelled(true);
 						// e.getPlayer().openInventory(null);
 					} else {
-						// if trying to lock the chest
+						if (items.isLock(i)) {
+							// worker.lock(c, args[1], args[2], e.getPlayer().getUniqueId(), key);
+						}
 					}
 				}
 			}

@@ -14,16 +14,15 @@ import org.bukkit.entity.Player;
 
 public class ComMgr implements CommandExecutor {
 
-	private InventoryWorker worker;
+	private InventoryWorker worker = new InventoryWorker();
 	private Main main;
-	NamespacedKey key;
-	Random r = new Random();
+	private NamespacedKey key;
+	private Random r = new Random();
 
 	public ComMgr(Main main) {
 		this.main = main;
 		main.getCommand("skycraft").setExecutor(this);
 		key = new NamespacedKey(main, "skycraft-lock");
-		worker = new InventoryWorker();
 	}
 
 	@Override
@@ -119,8 +118,24 @@ public class ComMgr implements CommandExecutor {
 				info(sender, false);
 				break;
 			case 1:
+				switch(args[0]) {
+				case "help":
+					help(sender, false);
+					break;
+				case "info":
+					info(sender, false);
+					break;
+				case "reload":
+					main.reloadConfig();
+					main.reloadLocale();
+					main.send(main.getConfig().getString("reloaded"));
+					break;
+				default:
+					break;
+				}
 				break;
 			default:
+				main.send(main.getLocale().getString("wrong-cmd"));
 				break;
 			}
 		}
