@@ -1,23 +1,22 @@
 package org.SkyCraftTeam.SkyCraft.Core;
 
-import java.util.Random;
 import org.SkyCraftTeam.SkyCraft.Main;
 import org.SkyCraftTeam.SkyCraft.Utils.Colors;
-import org.SkyCraftTeam.SkyCraft.Utils.InventoryWorker;
+import org.SkyCraftTeam.SkyCraft.Utils.IHolder;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
 public class ComMgr implements CommandExecutor {
 
-	private InventoryWorker worker = new InventoryWorker();
 	private Main main;
 	private NamespacedKey key;
-	private Random r = new Random();
 
 	public ComMgr(Main main) {
 		this.main = main;
@@ -52,9 +51,18 @@ public class ComMgr implements CommandExecutor {
 					if (p.hasPermission("skycraft.unlock")) {
 						Block b = p.getTargetBlock(null, 32);
 						if (b.getType().equals(Material.CHEST)) {
-							worker.unlock(b, key);
-							p.sendMessage(
-									Colors.clr(main.getLocale().getString("locked").replaceAll("%level%", args[1])));
+							if (main.getWorker().isLocked(b)) {
+								for (Inventory inv : main.getOpenedInvs()) {
+									if (((IHolder) inv.getHolder()).getChest().equals((Chest) b.getState())) {
+										p.sendMessage(Colors.clr(main.getLocale().getString("owned")));
+										return true;
+									}
+								}
+								main.getWorker().unlock(b, key);
+								p.sendMessage(Colors.clr(main.getLocale().getString("unlocked")));
+							} else {
+								p.sendMessage(Colors.clr(main.getLocale().getString("not-locked")));
+							}
 						} else {
 							p.sendMessage(Colors.clr(main.getLocale().getString("no-block")));
 						}
@@ -83,11 +91,11 @@ public class ComMgr implements CommandExecutor {
 					if (p.hasPermission("skycraft.lock")) {
 						if (args[1].equalsIgnoreCase("novice") || args[1].equalsIgnoreCase("adept")
 								|| args[1].equalsIgnoreCase("master") || args[1].equalsIgnoreCase("expert")) {
-							if (args[2].equalsIgnoreCase("imaze") || args[2].equalsIgnoreCase("push")
+							if (args[2].equalsIgnoreCase("maze") || args[2].equalsIgnoreCase("push")
 									|| args[2].equalsIgnoreCase("order")) {
 								Block b = p.getTargetBlock(null, 32);
 								if (b.getType().equals(Material.CHEST)) {
-									worker.lock(b, args[1], args[2], p.getUniqueId(), key);
+									main.getWorker().lock(b, args[1], args[2], p.getUniqueId(), key);
 									p.sendMessage(Colors
 											.clr(main.getLocale().getString("locked").replaceAll("%level%", args[1])));
 								} else {
@@ -103,9 +111,70 @@ public class ComMgr implements CommandExecutor {
 						p.sendMessage(Colors.clr(main.getLocale().getString("no-perm")));
 					}
 					break;
+				case "give":
+					if (p.hasPermission("skycraft.give")) {
+						if (main.getServer().getPlayerExact(args[1]) != null) {
+							if (main.getServer().getPlayerExact(args[1]).isOnline()) {
+								if (args[2].equalsIgnoreCase("lockpick")) {
+									main.getServer().getPlayerExact(args[1]).getInventory()
+											.addItem(main.getIItems().getLockpick());
+									p.sendMessage(Colors.clr(main.getLocale().getString("given-lockpick")));
+									main.getServer().getPlayerExact(args[1])
+											.sendMessage(Colors.clr(main.getLocale().getString("received-lockpick")));
+								} else {
+									p.sendMessage(Colors.clr(main.getLocale().getString("wrong-item")));
+								}
+							} else {
+								p.sendMessage(Colors.clr(main.getLocale().getString("player-offline")));
+							}
+						} else {
+							p.sendMessage(Colors.clr(main.getLocale().getString("player-not-found")));
+						}
+					} else {
+						p.sendMessage(Colors.clr(main.getLocale().getString("no-perm")));
+					}
+					break;
 				default:
 					p.sendMessage(Colors.clr(main.getLocale().getString("wrong-cmd")));
 					break;
+				}
+				break;
+			case 4:
+				if (args[0].equalsIgnoreCase("give")) {
+					if (p.hasPermission("skycraft.give")) {
+						if (main.getServer().getPlayerExact(args[1]) != null) {
+							if (main.getServer().getPlayerExact(args[1]).isOnline()) {
+								if (args[2].equalsIgnoreCase("maze") || args[2].equalsIgnoreCase("push")
+										|| args[2].equalsIgnoreCase("order")) {
+									switch (args[3]) {
+									case "novice":
+									case "adept":
+									case "master":
+									case "expert":
+										main.getServer().getPlayerExact(args[1]).getInventory()
+												.addItem(main.getIItems().getLock(args[2], args[3]));
+										p.sendMessage(Colors.clr(main.getLocale().getString("given")));
+										main.getServer().getPlayerExact(args[1])
+												.sendMessage(Colors.clr(main.getLocale().getString("received")));
+										break;
+									default:
+										p.sendMessage(Colors.clr(main.getLocale().getString("wrong-level")));
+										break;
+									}
+								} else {
+									p.sendMessage(Colors.clr(main.getLocale().getString("wrong-type")));
+								}
+							} else {
+								p.sendMessage(Colors.clr(main.getLocale().getString("player-offline")));
+							}
+						} else {
+							p.sendMessage(Colors.clr(main.getLocale().getString("player-not-found")));
+						}
+					} else {
+						p.sendMessage(Colors.clr(main.getLocale().getString("no-perm")));
+					}
+				} else {
+					p.sendMessage(Colors.clr(main.getLocale().getString("wrong-cmd")));
 				}
 				break;
 			default:
@@ -118,7 +187,7 @@ public class ComMgr implements CommandExecutor {
 				info(sender, false);
 				break;
 			case 1:
-				switch(args[0]) {
+				switch (args[0]) {
 				case "help":
 					help(sender, false);
 					break;
@@ -128,10 +197,67 @@ public class ComMgr implements CommandExecutor {
 				case "reload":
 					main.reloadConfig();
 					main.reloadLocale();
-					main.send(main.getConfig().getString("reloaded"));
+					main.send(main.getLocale().getString("reloaded"));
 					break;
 				default:
 					break;
+				}
+				break;
+			case 3:
+				if (args[0].equalsIgnoreCase("give")) {
+					if (main.getServer().getPlayerExact(args[1]) != null) {
+						if (main.getServer().getPlayerExact(args[1]).isOnline()) {
+							if (args[2].equalsIgnoreCase("lockpick")) {
+								main.getServer().getPlayerExact(args[1]).getInventory()
+										.addItem(main.getIItems().getLockpick());
+								main.send(main.getLocale().getString("given-lockpick"));
+								main.getServer().getPlayerExact(args[1])
+										.sendMessage(Colors.clr(main.getLocale().getString("received-lockpick")));
+							} else {
+								main.send(main.getLocale().getString("wrong-item"));
+							}
+						} else {
+							main.send(main.getLocale().getString("player-offline"));
+						}
+					} else {
+						main.send(main.getLocale().getString("player-not-found"));
+					}
+				} else {
+					main.send(main.getLocale().getString("wrong-cmd"));
+				}
+				break;
+			case 4:
+				if (args[0].equalsIgnoreCase("give")) {
+					if (main.getServer().getPlayerExact(args[1]) != null) {
+						if (main.getServer().getPlayerExact(args[1]).isOnline()) {
+							if (args[2].equalsIgnoreCase("maze") || args[2].equalsIgnoreCase("push")
+									|| args[2].equalsIgnoreCase("order")) {
+								switch (args[3]) {
+								case "novice":
+								case "adept":
+								case "master":
+								case "expert":
+									main.getServer().getPlayerExact(args[1]).getInventory()
+											.addItem(main.getIItems().getLock(args[2], args[3]));
+									main.send(main.getLocale().getString("given"));
+									main.getServer().getPlayerExact(args[1])
+											.sendMessage(Colors.clr(main.getLocale().getString("received")));
+									break;
+								default:
+									main.send(main.getLocale().getString("wrong-level"));
+									break;
+								}
+							} else {
+								main.send(main.getLocale().getString("wrong-type"));
+							}
+						} else {
+							main.send(main.getLocale().getString("player-offline"));
+						}
+					} else {
+						main.send(main.getLocale().getString("player-not-found"));
+					}
+				} else {
+					main.send(main.getLocale().getString("wrong-cmd"));
 				}
 				break;
 			default:
@@ -149,12 +275,16 @@ public class ComMgr implements CommandExecutor {
 			s.sendMessage(Colors.clr("&e/skycraft info &a- plugin info"));
 			s.sendMessage(Colors.clr("&e/skycraft reload &a- reload configuration"));
 			s.sendMessage(Colors.clr("&e/skycraft lock <level> <type> &a- lock chest"));
+			s.sendMessage(Colors.clr("&e/skycraft give <player> <type> <level> &a- give player a lock"));
+			s.sendMessage(Colors.clr("&e/skycraft give <player> lockpick &a- give player a lockpick"));
 			s.sendMessage(Colors.clr("&e/skycraft unlock &a- unlock chest"));
 		} else {
 			main.send("&bSkyCraft &fhelp page");
 			main.send("/skycraft help &b- opens this page");
 			main.send("/skycraft info &b- plugin info");
 			main.send("/skycraft reload &b- reload configuration");
+			main.send("/skycraft give <player> <type> <level> &b- give player a lock");
+			main.send("/skycraft give <player> lockpick &b- give player a lockpick");
 		}
 	}
 

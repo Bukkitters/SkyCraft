@@ -2,14 +2,24 @@ package org.SkyCraftTeam.SkyCraft.Utils;
 
 import java.util.Random;
 import java.util.UUID;
+import org.SkyCraftTeam.SkyCraft.Main;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
 public class InventoryWorker {
 
-	Random r = new Random();
+	private Random r = new Random();
+	private Main main;
+	private NamespacedKey opened;
+
+	public InventoryWorker(Main main) {
+		this.main = main;
+		opened = new NamespacedKey(main, "opened");
+	}
 
 	private byte getIMazeEnd(String level) {
 		switch (level) {
@@ -95,10 +105,12 @@ public class InventoryWorker {
 					s += (";" + slot);
 				}
 			}
-			s = s.replaceFirst(";", "") + ";" + type;
 			break;
 		}
+		s = s.replaceFirst(";", "") + ";" + type + ";" + id.toString();
 		c.getPersistentDataContainer().set(key, PersistentDataType.STRING, s);
+		c.getPersistentDataContainer().set(opened, PersistentDataType.STRING, "");
+		c.update();
 	}
 
 	private String randomise(byte poses) {
@@ -116,6 +128,58 @@ public class InventoryWorker {
 	public void unlock(Block b, NamespacedKey key) {
 		Chest c = (Chest) b.getState();
 		c.getPersistentDataContainer().remove(key);
+		c.getPersistentDataContainer().remove(opened);
+		c.update();
+	}
+
+	public void lock(Chest c, ItemStack i, UUID id, NamespacedKey key) {
+		String type = main.getIItems().getType(i);
+		String level = main.getIItems().getLevel(i);
+		lock(c.getBlock(), level, type, id, key);
+		main.getServer().getPlayer(id)
+				.sendMessage(Colors.clr(main.getLocale().getString("locked").replaceAll("%level%", level)));
+	}
+
+	public boolean isOwner(UUID id, NamespacedKey key, Chest c) {
+		return id.toString().equalsIgnoreCase(c.getPersistentDataContainer().get(key, PersistentDataType.STRING)
+				.split(";")[c.getPersistentDataContainer().get(key, PersistentDataType.STRING).split(";").length - 1]);
+	}
+
+	public void getInventory(Chest c, NamespacedKey key, UUID viewer) {
+		Inventory inv;
+		String data = c.getPersistentDataContainer().get(key, PersistentDataType.STRING);
+		switch (data.split(";")[data.split(";").length - 2]) {
+		case "push":
+			inv = main.getServer().createInventory(new IHolder("push", viewer, c), 54,
+					Colors.clr(main.getConfig().getString("inventory-name")));
+			// fill with items
+			break;
+		case "maze":
+			inv = main.getServer().createInventory(new IHolder("maze", viewer, c), 54,
+					Colors.clr(main.getConfig().getString("inventory-name")));
+			// fill with items
+			break;
+		default:
+			inv = main.getServer().createInventory(new IHolder("order", viewer, c), 45,
+					Colors.clr(main.getConfig().getString("inventory-name")));
+			// fill with items
+			break;
+		}
+		main.getServer().getPlayer(viewer).openInventory(inv);
+		main.getOpenedInvs().add(inv);
+	}
+
+	public String getLock(Chest c, NamespacedKey key) {
+		return c.getPersistentDataContainer().get(key, PersistentDataType.STRING);
+	}
+
+	public boolean opened(Chest c, UUID id) {
+		return c.getPersistentDataContainer().get(opened, PersistentDataType.STRING).contains(id.toString());
+	}
+
+	public boolean isLocked(Block b) {
+		Chest c = (Chest) b.getState();
+		return c.getPersistentDataContainer().has(new NamespacedKey(main, "skycraft-lock"), PersistentDataType.STRING);
 	}
 
 }

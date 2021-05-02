@@ -1,6 +1,17 @@
-lockpick-material:
-novice-lock-material:
-adept-lock-material:
-master-lock-material:
-expert-lock-material:
+resourcepack:
+  enabled: false
+  lockpick-material: 'STICK'
+  order-lock-material: 'MUSIC_DISC_STAL'
+  push-lock-material: 'MUSIC_DISC_STAL'
+  maze-lock-material: 'MUSIC_DISC_STAL'
+  lockpick-modeldata: 1
+  order-lock-modeldata: 1
+  push-lock-modeldata: 2
+  maze-lock-modeldata: 3
+lockpick-name: '&aLockpick'
+order-lock-name: '&aLock: &eorder'
+push-lock-name: '&aLock: &epush'
+maze-lock-name: '&aLock: &emaze'
+inventory-name: '&dCringe'
+craft-locks: true
   
