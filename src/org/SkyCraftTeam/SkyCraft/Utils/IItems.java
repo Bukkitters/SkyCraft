@@ -11,7 +11,10 @@ import net.minecraft.server.v1_16_R3.NBTTagString;
 public class IItems {
 
 	private ItemStack lockpick = new ItemStack(Material.TRIPWIRE_HOOK), order = new ItemStack(Material.MUSIC_DISC_STAL),
-			push = new ItemStack(Material.MUSIC_DISC_STAL), maze = new ItemStack(Material.MUSIC_DISC_STAL);
+			push = new ItemStack(Material.MUSIC_DISC_STAL), maze = new ItemStack(Material.MUSIC_DISC_STAL),
+			rightArrow = new ItemStack(Material.ARROW), downArrow = new ItemStack(Material.ARROW),
+			wall = new ItemStack(Material.BLACK_STAINED_GLASS_PANE), lockLevel = new ItemStack(Material.MUSIC_DISC_STAL);
+	private String lvS;
 
 	public IItems(Main main) {
 		NBTTagCompound tag = new NBTTagCompound();
@@ -62,6 +65,13 @@ public class IItems {
 			m.setCustomModelData(main.getConfig().getInt("resourcepack.maze-lock-modeldata"));
 		}
 		maze.setItemMeta(m);
+		m = rightArrow.getItemMeta();
+		m.setDisplayName(Colors.clr(main.getConfig().getString("right-arrow-name")));
+		rightArrow.setItemMeta(m);
+		m = downArrow.getItemMeta();
+		m.setDisplayName(Colors.clr(main.getConfig().getString("down-arrow-name")));
+		downArrow.setItemMeta(m);
+		lvS = Colors.clr(main.getConfig().getString("locklevel-name"));
 	}
 
 	public boolean isLock(ItemStack i) {
@@ -141,6 +151,25 @@ public class IItems {
 
 	public ItemStack getLockpick() {
 		return lockpick;
+	}
+
+	public ItemStack getDownArrow() {
+		return downArrow;
+	}
+
+	public ItemStack getRightArrow() {
+		return rightArrow;
+	}
+
+	public ItemStack getWall() {
+		return wall;
+	}
+
+	public ItemStack getLockLevel(String level) {
+		ItemMeta m = lockLevel.getItemMeta();
+		m.setDisplayName(lvS.replaceAll("level", level));
+		lockLevel.setItemMeta(m);
+		return lockLevel;
 	}
 
 }

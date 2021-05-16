@@ -12,6 +12,9 @@ lockpick-name: '&aLockpick'
 order-lock-name: '&aLock: &eorder'
 push-lock-name: '&aLock: &epush'
 maze-lock-name: '&aLock: &emaze'
+down-arrow-name: ''
+right-arrow-name: ''
 inventory-name: '&dCringe'
+locklevel-name: '&eLock level: &d%level%'
 craft-locks: true
   

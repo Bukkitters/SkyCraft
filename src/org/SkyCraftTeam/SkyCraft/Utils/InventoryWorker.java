@@ -148,21 +148,65 @@ public class InventoryWorker {
 	public void getInventory(Chest c, NamespacedKey key, UUID viewer) {
 		Inventory inv;
 		String data = c.getPersistentDataContainer().get(key, PersistentDataType.STRING);
-		switch (data.split(";")[data.split(";").length - 2]) {
-		case "push":
-			inv = main.getServer().createInventory(new IHolder("push", viewer, c), 54,
-					Colors.clr(main.getConfig().getString("inventory-name")));
-			// fill with items
+		String level;
+		switch (data.split(";").length - 2) {
+		case 3:
+			level = "novice";
 			break;
-		case "maze":
-			inv = main.getServer().createInventory(new IHolder("maze", viewer, c), 54,
-					Colors.clr(main.getConfig().getString("inventory-name")));
-			// fill with items
+		case 4:
+			level = "adept";
+			break;
+		case 5:
+			level = "master";
 			break;
 		default:
-			inv = main.getServer().createInventory(new IHolder("order", viewer, c), 45,
+			level = "expert";
+			break;
+		}
+		switch (data.split(";")[data.split(";").length - 2]) {
+		case "push":
+			inv = main.getServer().createInventory(new IHolder("push", viewer, c, level), 54,
 					Colors.clr(main.getConfig().getString("inventory-name")));
-			// fill with items
+			for (int i = 6; i <= 51; i += 9) {
+				inv.setItem(i, main.getIItems().getWall());
+			}
+			for (int i = 0; i < 6; i++) {
+				inv.setItem(i, main.getIItems().getWall());
+			}
+			for (int i = 45; i < 51; i++) {
+				inv.setItem(i, main.getIItems().getWall());
+			}
+			inv.setItem(8, main.getIItems().getLockLevel(level));
+			inv.setItem(53, main.getIItems().getLockLevel(level));
+			// place ingots
+			break;
+		case "maze":
+			inv = main.getServer().createInventory(new IHolder("maze", viewer, c, level), 54,
+					Colors.clr(main.getConfig().getString("inventory-name")));
+			for (int i = 6; i <= 51; i += 9) {
+				inv.setItem(i, main.getIItems().getWall());
+			}
+			inv.setItem(52, main.getIItems().getDownArrow());
+			inv.setItem(43, main.getIItems().getLockpick());
+			inv.setItem(44, main.getIItems().getRightArrow());
+			inv.setItem(8, main.getIItems().getLockLevel(level));
+			// place the maze itself
+			break;
+		default:
+			inv = main.getServer().createInventory(new IHolder("order", viewer, c, level), 45,
+					Colors.clr(main.getConfig().getString("inventory-name")));
+			for (int i = 6; i <= 42; i += 9) {
+				inv.setItem(i, main.getIItems().getWall());
+			}
+			for (int i = 0; i < 6; i++) {
+				inv.setItem(i, main.getIItems().getWall());
+			}
+			for (int i = 36; i < 42; i++) {
+				inv.setItem(i, main.getIItems().getWall());
+			}
+			inv.setItem(8, main.getIItems().getLockLevel(level));
+			inv.setItem(44, main.getIItems().getLockLevel(level));
+			// place ingots again
 			break;
 		}
 		main.getServer().getPlayer(viewer).openInventory(inv);

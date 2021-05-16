@@ -14,11 +14,13 @@ public class IHolder implements InventoryHolder {
 	private String order;
 	private String pushes;
 	private String path;
+	private String level;
 
-	public IHolder(String type, UUID viewer, Chest chest) {
+	public IHolder(String type, UUID viewer, Chest chest, String level) {
 		this.type = type;
 		this.viewer = viewer;
 		this.chest = chest;
+		this.level = level;
 	}
 
 	@Override
@@ -48,6 +50,10 @@ public class IHolder implements InventoryHolder {
 
 	public String getPath() {
 		return path;
+	}
+
+	public String getLevel() {
+		return level;
 	}
 
 }
