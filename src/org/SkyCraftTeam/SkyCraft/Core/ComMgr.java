@@ -2,16 +2,13 @@ package org.SkyCraftTeam.SkyCraft.Core;
 
 import org.SkyCraftTeam.SkyCraft.Main;
 import org.SkyCraftTeam.SkyCraft.Utils.Colors;
-import org.SkyCraftTeam.SkyCraft.Utils.IHolder;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
-import org.bukkit.block.Chest;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 
 public class ComMgr implements CommandExecutor {
 
@@ -42,6 +39,7 @@ public class ComMgr implements CommandExecutor {
 					if (p.hasPermission("skycraft.reload")) {
 						main.reloadConfig();
 						main.reloadLocale();
+						main.reloadIItems();
 						p.sendMessage(Colors.clr(main.getLocale().getString("reloaded")));
 					} else {
 						p.sendMessage(Colors.clr(main.getLocale().getString("no-perm")));
@@ -51,7 +49,7 @@ public class ComMgr implements CommandExecutor {
 					if (p.hasPermission("skycraft.unlock")) {
 						Block b = p.getTargetBlock(null, 32);
 						if (b.getType().equals(Material.CHEST)) {
-							if (main.getWorker().isLocked(b)) {
+							/*if (main.getWorker().isLocked(b)) {
 								for (Inventory inv : main.getOpenedInvs()) {
 									if (((IHolder) inv.getHolder()).getChest().equals((Chest) b.getState())) {
 										p.sendMessage(Colors.clr(main.getLocale().getString("owned")));
@@ -62,7 +60,7 @@ public class ComMgr implements CommandExecutor {
 								p.sendMessage(Colors.clr(main.getLocale().getString("unlocked")));
 							} else {
 								p.sendMessage(Colors.clr(main.getLocale().getString("not-locked")));
-							}
+							}*/
 						} else {
 							p.sendMessage(Colors.clr(main.getLocale().getString("no-block")));
 						}
@@ -95,7 +93,7 @@ public class ComMgr implements CommandExecutor {
 									|| args[2].equalsIgnoreCase("order")) {
 								Block b = p.getTargetBlock(null, 32);
 								if (b.getType().equals(Material.CHEST)) {
-									main.getWorker().lock(b, args[1], args[2], p.getUniqueId(), key);
+									//main.getWorker().lock(b, args[1], args[2], p.getUniqueId(), key);
 									p.sendMessage(Colors
 											.clr(main.getLocale().getString("locked").replaceAll("%level%", args[1])));
 								} else {

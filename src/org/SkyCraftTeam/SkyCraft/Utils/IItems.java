@@ -167,7 +167,7 @@ public class IItems {
 
 	public ItemStack getLockLevel(String level) {
 		ItemMeta m = lockLevel.getItemMeta();
-		m.setDisplayName(lvS.replaceAll("level", level));
+		m.setDisplayName(lvS.replaceAll("%level%", level));
 		lockLevel.setItemMeta(m);
 		return lockLevel;
 	}

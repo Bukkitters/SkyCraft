@@ -1,43 +1,35 @@
 package org.SkyCraftTeam.SkyCraft;
 
+import com.google.common.base.Charsets;
+import org.SkyCraftTeam.SkyCraft.Core.ComMgr;
+import org.SkyCraftTeam.SkyCraft.Utils.CraftHandler;
+import org.SkyCraftTeam.SkyCraft.Utils.IItems;
+import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import org.SkyCraftTeam.SkyCraft.Core.ChestInteract;
-import org.SkyCraftTeam.SkyCraft.Core.ComMgr;
-import org.SkyCraftTeam.SkyCraft.Core.InvClick;
-import org.SkyCraftTeam.SkyCraft.Core.InvClose;
-import org.SkyCraftTeam.SkyCraft.Utils.CraftHandler;
-import org.SkyCraftTeam.SkyCraft.Utils.IItems;
-import org.SkyCraftTeam.SkyCraft.Utils.InventoryWorker;
-import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.plugin.java.JavaPlugin;
-import com.google.common.base.Charsets;
 
 public class Main extends JavaPlugin {
 
 	private File loc = new File(getDataFolder(), "locale.yml");
 	private FileConfiguration locale;
 	private IItems iItems;
-	private InventoryWorker worker;
 	private List<Inventory> openedInvs = new ArrayList<Inventory>();
 
 	public void onEnable() {
 		saveDefaultConfig();
 		saveDefaultLocale();
-		worker = new InventoryWorker(this);
 		iItems = new IItems(this);
 		if (getConfig().getBoolean("craft-locks")) new CraftHandler(this);
 		new ComMgr(this);
-		new ChestInteract(this);
-		new InvClick(this);
-		new InvClose(this);
 		send("&aPlugin enabled!");
 	}
 
@@ -78,8 +70,8 @@ public class Main extends JavaPlugin {
 		return iItems;
 	}
 
-	public InventoryWorker getWorker() {
-		return worker;
+	public void reloadIItems() {
+		iItems = new IItems(this);
 	}
 
 	public List<Inventory> getOpenedInvs() {
