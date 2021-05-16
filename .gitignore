@@ -1,0 +1,17 @@
+
+.classpath
+.project
+.settings/org.eclipse.jdt.core.prefs
+bin/config.yml
+bin/locale.yml
+bin/org/SkyCraftTeam/SkyCraft/Core/ChestInteract.class
+bin/org/SkyCraftTeam/SkyCraft/Core/ComMgr.class
+bin/org/SkyCraftTeam/SkyCraft/Core/InvClick.class
+bin/org/SkyCraftTeam/SkyCraft/Core/InvClose.class
+bin/org/SkyCraftTeam/SkyCraft/Main.class
+bin/org/SkyCraftTeam/SkyCraft/Utils/Colors.class
+bin/org/SkyCraftTeam/SkyCraft/Utils/CraftHandler.class
+bin/org/SkyCraftTeam/SkyCraft/Utils/IHolder.class
+bin/org/SkyCraftTeam/SkyCraft/Utils/IItems.class
+bin/org/SkyCraftTeam/SkyCraft/Utils/InventoryWorker.class
+bin/plugin.yml
